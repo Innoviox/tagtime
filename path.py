@@ -1,5 +1,5 @@
 class Path:
-    def __init__(self, startStation: str, transfers = []):
+    def __init__(self, startStation: str, transfers=[]):
         self.startStation = startStation
         self.transfers = transfers
 

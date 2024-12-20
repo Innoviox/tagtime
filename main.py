@@ -22,4 +22,3 @@ for radar_dist in range(1, 11):
             i += 1
         j += 1
     print(f"Total: {i}/{j}")
-    
