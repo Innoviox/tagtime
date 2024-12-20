@@ -10,7 +10,7 @@ class Route:
         truncatedRoute = Route({})
         found = False
         for (s, t) in self.stations.items():
-            if s == station and t >= time:
+            if s.stop_id == station.stop_id and t >= time:
                 found = True
             if found:
                 truncatedRoute.stations[s] = t

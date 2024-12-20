@@ -1,6 +1,6 @@
 def search(startStation, startTime, timetable, runTime):
     possibleStations = []
-    queue = [(startStation, startTime)]
+    queue = [(startStation.stop_id, startTime)]
     visited = []
 
     while queue:
