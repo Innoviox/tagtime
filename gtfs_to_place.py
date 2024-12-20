@@ -17,7 +17,7 @@ class GTFSParser:
             for row in reader:
                 stop_id = row['stop_id']
                 if stop_id.startswith(self.station_key):
-                    name = row['stop_name'].strip(self.name_strip)
+                    name = row['stop_name']#.strip(self.name_strip)
                     location = {'lat': row['stop_lat'], 'lon': row['stop_lon']}
                     self.stations[stop_id] = {
                         'name': name, 
