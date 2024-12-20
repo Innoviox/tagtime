@@ -3,6 +3,6 @@ class Timetable:
         self.trips = trips
 
     def fromStation(self, station, time):
-        for trip in self.trips:
+        for trip in self.trips.values():
             if r := trip.truncated(station, time):
                 yield r
