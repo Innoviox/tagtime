@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from database import Database
 
 
 class BaseQuestion(ABC):

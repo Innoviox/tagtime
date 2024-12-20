@@ -1,6 +1,5 @@
 from util import *
 from database import Database
-from questions import RadarQuestion
 
 db = Database("places/dc.json")
 
@@ -13,12 +12,7 @@ paths = db.search(college_park, nine_am, thirty_minutes)
 for path in paths:
     db.print_path(path)
 
-for radar_dist in range(1, 11):
-    print(f"Radar distance: {radar_dist}")
-    radar = RadarQuestion(dist=radar_dist, origin=college_park)
-    i, j = 0, 0
-    for path in paths:
-        if radar.make_query(db)(path.last_station()):
-            i += 1
-        j += 1
-    print(f"Total: {i}/{j}")
+
+# for radar_dist in range(1, 11):
+for question in db.make_all_questions(college_park, time_to_seconds("09:30:00")):
+    print(f"{question}: {db.rate_question(question, paths)}/{len(paths)}")

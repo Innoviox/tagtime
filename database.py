@@ -3,6 +3,7 @@ from util import *
 from trip import Trip
 from timetable import Timetable
 from path import Path
+from questions import *
 
 
 class Database:
@@ -84,3 +85,33 @@ class Database:
                         queue.append((new_path, arrivalTime))
 
         return possibleStations
+
+    def get_end_time(self, path, start_time):
+        if not path.transfers:
+            return start_time
+        trip = self.trips[path.transfers[-1][0]]
+        return trip.stations[path.last_station()]
+
+    def make_all_questions(self, origin: str, start_time: int):
+        questions = []
+        for dist in [0.5, 1, 2, 3, 4, 5]:  # todo custom radar
+            questions.append(
+                RadarQuestion(dist=dist, origin=origin, db=self, time=10 * 60)
+            )
+
+        # cap thermometers at 30 minutes
+        # todo: walking thermometers?
+        for path in self.search(origin, start_time, 30 * 60):
+            questions.append(
+                ThermometerQuestion(
+                    start=origin,
+                    end=path.last_station(),
+                    db=self,
+                    time=self.get_end_time(path, start_time) - start_time,
+                )
+            )
+
+        return questions
+
+    def rate_question(self, question, paths):
+        return sum(1 for path in paths if question.query(path.last_station()))

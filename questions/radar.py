@@ -1,5 +1,4 @@
 from questions.base import BaseQuestion
-from database import Database
 
 
 class RadarQuestion(BaseQuestion):
@@ -7,8 +6,12 @@ class RadarQuestion(BaseQuestion):
         self.dist = kwargs.get("dist")
         self.origin = kwargs.get("origin")
         self.db = kwargs.get("db")
+        self.time = kwargs.get("time")
 
     def query(self, target: str):
         s1 = self.db.stations[self.origin]
         s2 = self.db.stations[target]
         return s1.location.distance(s2.location) <= self.dist
+
+    def __str__(self):
+        return f"RadarQuestion: {self.dist}mi ({self.time}s)"

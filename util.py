@@ -11,6 +11,9 @@ class Location:
             (self.latitude, self.longitude), (to.latitude, to.longitude)
         ).miles
 
+    def __str__(self):
+        return f"Location({self.latitude}, {self.longitude})"
+
 
 class Station:
     def __init__(self, name, location, stop_id):
