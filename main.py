@@ -38,5 +38,7 @@ nine_am = time_to_seconds("09:00:00")
 thirty_minutes = time_to_seconds("00:30:00")
 college_park = [i for i in stations if "COLLEGE PARK" in i.name][0].stop_id
 
-for station in search(college_park, nine_am, timetable, thirty_minutes):
-    print([i for i in stations if i.stop_id == station][0].name)
+for path in search(college_park, nine_am, timetable, thirty_minutes):
+    for station in path:
+        print([i for i in stations if i.stop_id == station][0].name, end=" -> ")
+    print()
