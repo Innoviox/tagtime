@@ -1,4 +1,5 @@
 import random
+import tqdm
 from questions import *
 
 
@@ -17,8 +18,8 @@ class Game:
         self.current_paths = self.db.search(
             self.start_location, self.start_time, self.run_time
         )
-        # self.current_hider_spot = random.choice(self.current_paths[1:]).last_station()
-        self.current_hider_spot = self.current_paths[-1].last_station()
+        self.current_hider_spot = random.choice(self.current_paths[1:]).last_station()
+        # self.current_hider_spot = self.current_paths[-1].last_station()
 
         self.current_seeker_spot = self.start_location
         self.total_time = 0
@@ -28,11 +29,13 @@ class Game:
         while True:
             best_question = None
             best_score = None  # todo: bits
-            for question in self.db.make_all_questions(
-                self.current_seeker_spot, self.start_time + self.total_time
+            for question in tqdm.tqdm(
+                self.db.make_all_questions(
+                    self.current_seeker_spot, self.start_time + self.total_time
+                )
             ):
                 total = self.db.rate_question(question, self.current_paths)
-                print(f"{question}: {total}/{len(self.current_paths)}")
+                # print(f"{question}: {total}/{len(self.current_paths)}")
                 score = abs(
                     total - len(self.current_paths) / 2
                 )  #  * (question.time + 1)
@@ -60,4 +63,4 @@ class Game:
                 print(f"\t{self.db.name_for_station_id(path.last_station())}")
             if isinstance(best_question, ThermometerQuestion):
                 self.current_seeker_spot = best_question.end.stop_id
-            input()
+            # input()

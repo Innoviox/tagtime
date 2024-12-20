@@ -1,4 +1,5 @@
-import json
+import json, collections
+import tqdm
 from util import *
 from trip import Trip
 from timetable import Timetable
@@ -94,24 +95,48 @@ class Database:
 
     def make_all_questions(self, origin: str, start_time: int):
         questions = []
-        for dist in [0.5, 1, 2, 3, 4, 5]:  # todo custom radar
-            questions.append(
-                RadarQuestion(dist=dist, origin=origin, db=self, time=10 * 60)
-            )
-
+        radars = {}
+        thermometers = collections.defaultdict(dict)
         # cap thermometers at 30 minutes
         # todo: walking thermometers?
-        for path in self.search(origin, start_time, 30 * 60):
-            questions.append(
-                ThermometerQuestion(
-                    start=origin,
-                    end=path.last_station(),
-                    db=self,
-                    time=self.get_end_time(path, start_time) - start_time,
-                )
-            )
+        for path in tqdm.tqdm(self.search(origin, start_time, 30 * 60)):
+            stations = list(self.all_stations(path, start_time))
+            for i, (station, time) in enumerate(stations):
+                for dist in [0.5, 1, 2, 3, 4, 5]:  # todo custom radar
+                    if station not in radars:
+                        radars[station] = True
+                        questions.append(
+                            RadarQuestion(dist=dist, origin=station, db=self, time=time)
+                        )
 
+                for end, end_time in stations[i + 1 :]:
+                    if end not in thermometers[station]:
+                        thermometers[station][end] = True
+                        questions.append(
+                            ThermometerQuestion(
+                                start=station,
+                                end=end,
+                                db=self,
+                                time=end_time - start_time,
+                            )
+                        )
         return questions
 
     def rate_question(self, question, paths):
         return sum(1 for path in paths if question.query(path.last_station()))
+
+    def all_stations(self, path, start_time):
+        yield path.startStation, start_time
+        for i, (trip_id, station) in enumerate(path.transfers):
+            switch_station = None
+            if i < len(path.transfers) - 1:
+                switch_station = path.transfers[i + 1][1]
+            trip = self.trips[trip_id]
+            on = False
+            for s, t in trip.stations.items():
+                if s == station:
+                    on = True
+                if on:
+                    yield s, t
+                if switch_station and s == switch_station:
+                    break
