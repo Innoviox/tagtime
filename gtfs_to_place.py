@@ -1,4 +1,5 @@
-import csv, json
+import csv, json, tqdm
+from util import time_to_seconds
 
 class GTFSParser:
     def __init__(self, path, station_key, name_strip):
@@ -14,7 +15,7 @@ class GTFSParser:
         self.stations = {}
         with open(f"{self.base_path}/stops.txt") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            for row in tqdm.tqdm(list(reader)):
                 stop_id = row['stop_id']
                 if stop_id.startswith(self.station_key):
                     name = row['stop_name']#.strip(self.name_strip)
@@ -31,7 +32,7 @@ class GTFSParser:
         self.routes = []
         with open(f"{self.base_path}/routes.txt") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            for row in tqdm.tqdm(list(reader)):
                 self.routes.append({
                     'route_id': row['route_id'],
                     'route_short_name': row['route_short_name'],
@@ -42,20 +43,29 @@ class GTFSParser:
         self.trips = {}
         with open(f"{self.base_path}/trips.txt") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            for row in tqdm.tqdm(list(reader)):
                 self.trips[row['trip_id']] = {
                     'route_id': row['route_id'],
                     'headsign': row['trip_headsign'],
-                    'timetable': []
+                    'stations': {}
                 }
 
         with open(f"{self.base_path}/stop_times.txt") as f:
             reader = csv.DictReader(f)
-            for row in reader:
-                self.trips[row['trip_id']]['timetable'].append({
-                    'stop_id': row['stop_id'],
-                    'arrival_time': row['arrival_time']
-                })
+            for row in tqdm.tqdm(list(reader)):
+                parent = self.find_parent(row['stop_id'])
+                if parent:
+                    self.trips[row['trip_id']]['stations'][parent] = time_to_seconds(row['arrival_time'])
+                else:
+                    print("Parent not found for", row['stop_id'])
+
+    def find_parent(self, stop_id):
+        for station in self.stations:
+            if stop_id == station:
+                return stop_id
+            for child in self.stations[station]['children']:
+                if stop_id == child:
+                    return station
 
     def to_json(self):
         self.parse_stations()

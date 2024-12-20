@@ -1,8 +1,8 @@
 class Timetable:
-    def __init__(self, routes):
-        self.routes = routes
+    def __init__(self, trips):
+        self.trips = trips
 
     def fromStation(self, station, time):
-        for route in self.routes:
-            if r := route.truncated(station, time):
+        for trip in self.trips:
+            if r := trip.truncated(station, time):
                 yield r
