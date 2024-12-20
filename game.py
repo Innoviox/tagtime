@@ -1,6 +1,7 @@
-import random
+import random, math
 import tqdm
 from questions import *
+from util import seconds_to_time
 
 
 class Game:
@@ -27,7 +28,7 @@ class Game:
         print(f"Hider at {self.db.name_for_station_id(self.current_hider_spot)}")
 
         while True:
-            best_question = None
+            best_questions = []
             best_score = None  # todo: bits
             for question in tqdm.tqdm(
                 self.db.make_all_questions(
@@ -36,16 +37,17 @@ class Game:
             ):
                 total = self.db.rate_question(question, self.current_paths)
                 # print(f"{question}: {total}/{len(self.current_paths)}")
-                score = abs(
-                    total - len(self.current_paths) / 2
-                )  #  * (question.time + 1)
+                score = abs(total - len(self.current_paths) / 2) * math.log(
+                    question.time + 1
+                )
                 if not best_score or score < best_score:
                     best_score = score
-                    best_question = question
+                    best_questions.append(question)
 
             print(
-                f"At {self.total_time}: Seeker at {self.db.name_for_station_id(self.current_seeker_spot)}"
+                f"At {seconds_to_time(self.total_time)}: Seeker at {self.db.name_for_station_id(self.current_seeker_spot)}"
             )
+            best_question = random.choice(best_questions)
             print(f"Best question: {best_question}, score: {best_score}")
             answer = best_question.query(self.current_hider_spot)
             self.total_time += best_question.time

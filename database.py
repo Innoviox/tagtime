@@ -106,7 +106,12 @@ class Database:
                     if station not in radars:
                         radars[station] = True
                         questions.append(
-                            RadarQuestion(dist=dist, origin=station, db=self, time=time)
+                            RadarQuestion(
+                                dist=dist,
+                                origin=station,
+                                db=self,
+                                time=time - start_time,
+                            )
                         )
 
                 for end, end_time in stations[i + 1 :]:
