@@ -40,10 +40,10 @@ class Database:
     def name_for_station_id(self, station_id):
         return self.stations[station_id].name
     
-    def station_id_for_name(self, name):
-        for stop_id, station in self.stations.items():
+    def station_for_name(self, name):
+        for station in self.stations.values():
             if name in station.name:
-                return stop_id
+                return station
 
     def print_path(self, path):
         print(self.name_for_station_id(path.startStation), " -> ", self.name_for_station_id(path.last_station()))

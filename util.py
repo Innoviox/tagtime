@@ -1,7 +1,13 @@
+from geopy import distance
+
 class Location:
     def __init__(self, lat, lon):
         self.latitude = lat
         self.longitude = lon
+
+    def distance(self, to):
+        return distance.distance((self.latitude, self.longitude), (to.latitude, to.longitude)).miles
+
 
 class Station:
     def __init__(self, name, location, stop_id):
