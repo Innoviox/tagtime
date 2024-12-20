@@ -1,5 +1,5 @@
 import json
-from util import Location, Station, Route, time_to_seconds
+from util import *
 from trip import Trip
 from timetable import Timetable
 from search import search
@@ -38,7 +38,15 @@ nine_am = time_to_seconds("09:00:00")
 thirty_minutes = time_to_seconds("00:30:00")
 college_park = [i for i in stations if "COLLEGE PARK" in i.name][0].stop_id
 
+def name_for_station_id(station_id):
+    return [i for i in stations if i.stop_id == station_id][0].name
+
 for path in search(college_park, nine_am, timetable, thirty_minutes):
-    for station in path:
-        print([i for i in stations if i.stop_id == station][0].name, end=" -> ")
-    print()
+    print(name_for_station_id(path.startStation), " -> ", name_for_station_id(path.last_station()))
+    prev = path.startStation
+    for transfer in path.transfers:
+        trip_id, station = transfer
+        trip = [i for i in trips if i.trip_id == trip_id][0]
+        route = [i for i in routes if i.route_id == trip.route_id][0]
+        print(f"\t{route.short_name} to {trip.headsign} at {name_for_station_id(station)} / {seconds_to_time(trip.stations[prev])} - {seconds_to_time(trip.stations[station])}")
+        prev = station

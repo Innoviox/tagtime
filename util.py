@@ -18,3 +18,9 @@ class Route:
 def time_to_seconds(time):
     h, m, s = map(int, time.split(':'))
     return h * 60 * 60 + m * 60 + s
+
+def seconds_to_time(seconds):
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = seconds % 60
+    return f"{h:02}:{m:02}:{s:02}"
