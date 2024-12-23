@@ -4,9 +4,13 @@ from database import Database
 
 app = Flask(__name__)
 map = Map()
-map.load_routes("transitland/f-dqc-wmata~rail-17682fd6de41fac6919edc1f433c8fc1f4aab3a8/shapes.txt")
+map.load_routes(
+    "transitland/f-dqc-wmata~rail-17682fd6de41fac6919edc1f433c8fc1f4aab3a8/shapes.txt"
+)
 map.set_db(Database("places/dc.json"))
 map.draw_routes()
+map.draw_stations()
+
 
 @app.route("/")
 def fullscreen():
