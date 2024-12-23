@@ -1,19 +1,15 @@
 from flask import Flask, render_template_string
-
-import folium
+from map import Map
+from database import Database
 
 app = Flask(__name__)
-
+map = Map()
+map.load_routes("transitland/f-dqc-wmata~rail-17682fd6de41fac6919edc1f433c8fc1f4aab3a8/shapes.txt")
+map.set_db(Database("places/dc.json"))
+map.draw_routes()
 
 @app.route("/")
 def fullscreen():
-    m = folium.Map()
-
-    # set the iframe width and height
-    m.get_root().width = "800px"
-    m.get_root().height = "600px"
-    iframe = m.get_root()._repr_html_()
-
     return render_template_string(
         """
             <!DOCTYPE html>
@@ -25,7 +21,7 @@ def fullscreen():
                 </body>
             </html>
         """,
-        iframe=iframe,
+        iframe=map.iframe,
     )
 
 
