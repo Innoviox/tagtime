@@ -43,10 +43,12 @@ def fullscreen():
         iframe=map.iframe,
     )
 
+
 @app.route("/test")
 def test():
     print("test!")
     return "OK"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
