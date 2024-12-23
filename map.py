@@ -34,7 +34,6 @@ class Map:
                     if k[0] == "S":
                         break
             if color:
-                print(color)
                 fg = folium.FeatureGroup(name=route_id)
                 route = [(float(lat), float(lon)) for lat, lon in route_points]
                 fg.add_child(folium.PolyLine(route, color=f"#{color}"))

@@ -10,6 +10,7 @@ class Game:
         self.start_location = start_location
         self.start_time = start_time
         self.run_time = run_time
+        self.total_time = 0
 
         self.current_paths = []
         self.current_hider_spot = None
